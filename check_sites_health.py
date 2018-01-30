@@ -23,16 +23,15 @@ def is_server_respond_with_200(url):
 def get_domain_expiration_date(url):
     protocol_letters = 8
     url = url[protocol_letters:].strip("/")
-    w = whois.whois(url)
-    if w.expiration_date and w.status == None:
-        print('The domain does not exist, exiting...')
-        exit()
-    if type(w.expiration_date) == list:
-        w.expiration_date = w.expiration_date[0]
+    website_info = whois.whois(url)
+    if website_info.expiration_date and website_info.status == None:
+        return 'The domain does not exist, exiting...'
+    if type(website_info.expiration_date) == list:
+        website_info.expiration_date = website_info.expiration_date[0]
     else:
-        w.expiration_date = w.expiration_date
+        website_info.expiration_date = website_info.expiration_date
 
-    return w.expiration_date
+    return website_info.expiration_date
 
 
 if __name__ == '__main__':
