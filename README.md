@@ -14,9 +14,13 @@ The program checks the status websites given at the input. Input - text file wit
  
  example output
  ```
-https://devman.org/ HTTP status code 200, Domain lasts more than 30 days
-https://vk.com/ HTTP status code 501, Domain lasts more than 30 days
-https://github.com/ HTTP status code 200, Domain lasts more than 30 days
+https://devman.org/ <Response [200]>, Domain lasts more than 30 days
+https://vk.com/ <Response [200]>, Domain lasts more than 30 days
+https://github.com/ <Response [200]>, Domain lasts more than 30 days
+```
+output to nonexisting website
+```
+https://zhukovaksusha.com/ failed to connect
 ```
 
 # Project Goals
