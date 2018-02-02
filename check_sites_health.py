@@ -25,7 +25,7 @@ def get_domain_expiration_date(url):
         else:
             return domain_info.expiration_date
     except whois.parser.PywhoisError:
-        exit("No domain match for {}".format(url))
+        return None
 
 
 def check_if_expir_in_30_d(exp_date, todays_date):
@@ -51,5 +51,7 @@ if __name__ == '__main__':
             print("HTTP Status Code: Not OK")
 
         exp_date = get_domain_expiration_date(link)
+        if exp_date is None:
+            exit("No domain match for {}".format(link))
         expires_in_30_days = check_if_expir_in_30_d(exp_date, todays_date)
         print("Domain expires in 30 days: {}".format(expires_in_30_days))
