@@ -44,7 +44,8 @@ def output_info_to_console(links,
 
         exp_date = get_domain_expiration_date(link)
         if exp_date is None:
-            exit("No domain match for {}".format(link))
+            print("No domain match for {}".format(link))
+            return
         expires_in_num_of_days = check_expir_date_from_param(
             min_days_of_payment,
             exp_date,
