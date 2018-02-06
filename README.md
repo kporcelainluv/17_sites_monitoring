@@ -17,13 +17,13 @@ Input - text file with URLs for verification. Output - the status of each site, 
  ```
 Checking https://devman.org/
 HTTP Status Code: OK
-Domain expires in set number of days: No
+Domain expires in set number of days (30): No
 Checking https://vk.com/
 HTTP Status Code: OK
-Domain expires in set number of days: No
+Domain expires in set number of days (30): No
 Checking https://github.com/
 HTTP Status Code: OK
-Domain expires in set number of days: No
+Domain expires in set number of days (30): No
 ```
 output to nonexisting website
 ```
