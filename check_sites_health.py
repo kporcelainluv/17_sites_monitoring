@@ -11,7 +11,7 @@ def load_urls_to_a_list(text_file):
 
 def is_server_respond_ok(domain):
     try:
-        response = requests.request('GET', domain)
+        response = requests.request("GET", domain)
         return response.ok
     except requests.ConnectionError:
         return None
@@ -30,19 +30,17 @@ def check_expir_date_from_param(days_of_payment, exp_date, todays_date):
     return bool(days_due_expirency <= days_of_payment)
 
 
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        exit("Enter a valid txt file")
-    text_file = sys.argv[1]
-    links = load_urls_to_a_list(text_file)
-    todays_date = datetime.now()
-    min_days_of_payment = 30
+def output_info_to_console(links,
+                           todays_date,
+                           min_days_of_payment
+                           ):
     for link in links:
         print("Checking {}".format(link))
+        server_respond_text = "HTTP Status Code: {}"
         if is_server_respond_ok(link):
-            print("HTTP Status Code: OK")
+            print(server_respond_text.format("OK"))
         else:
-            print("HTTP Status Code: Not OK")
+            print(server_respond_text.format("Not OK"))
 
         exp_date = get_domain_expiration_date(link)
         if exp_date is None:
@@ -57,3 +55,16 @@ if __name__ == '__main__':
             print(domain_exp_text.format(min_days_of_payment, "Yes"))
         else:
             print(domain_exp_text.format(min_days_of_payment, "No"))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        exit("Enter a valid txt file")
+    text_file = sys.argv[1]
+    links = load_urls_to_a_list(text_file)
+    todays_date = datetime.now()
+    min_days_of_payment = 30
+    output_info_to_console(links,
+                           todays_date,
+                           min_days_of_payment
+                           )
