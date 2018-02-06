@@ -6,7 +6,7 @@ import whois
 
 def load_urls_to_a_list(text_file):
     with open(text_file) as file_of_links:
-        return [(*file_of_links)]
+        return file_of_links.read().splitlines()
 
 
 def is_server_respond_ok(domain):
@@ -20,20 +20,14 @@ def is_server_respond_ok(domain):
 def get_domain_expiration_date(url):
     try:
         domain_info = whois.whois(url)
-        if type(domain_info.expiration_date) == list:
-            return domain_info.expiration_date[0]
-        else:
-            return domain_info.expiration_date
+        return domain_info.expiration_date[0]
     except whois.parser.PywhoisError:
         return None
 
 
-def check_if_expir_in_30_d(exp_date, todays_date):
-    min_days_of_payment = 30
+def check_expir_date_from_param(days_of_payment, exp_date, todays_date):
     days_due_expirency = abs(exp_date - todays_date).days
-    if days_due_expirency <= min_days_of_payment:
-        return True
-    return False
+    return bool(days_due_expirency <= days_of_payment)
 
 
 if __name__ == '__main__':
@@ -42,9 +36,9 @@ if __name__ == '__main__':
     text_file = sys.argv[1]
     links = load_urls_to_a_list(text_file)
     todays_date = datetime.now()
-
+    min_days_of_payment = 30
     for link in links:
-        print("Checking {}".format(link.strip()))
+        print("Checking {}".format(link))
         if is_server_respond_ok(link):
             print("HTTP Status Code: OK")
         else:
@@ -53,5 +47,13 @@ if __name__ == '__main__':
         exp_date = get_domain_expiration_date(link)
         if exp_date is None:
             exit("No domain match for {}".format(link))
-        expires_in_30_days = check_if_expir_in_30_d(exp_date, todays_date)
-        print("Domain expires in 30 days: {}".format(expires_in_30_days))
+        expires_in_num_of_days = check_expir_date_from_param(
+            min_days_of_payment,
+            exp_date,
+            todays_date
+        )
+        domain_exp_text = "Domain expires in set number of days ({}): {}"
+        if expires_in_num_of_days:
+            print(domain_exp_text.format(min_days_of_payment, "Yes"))
+        else:
+            print(domain_exp_text.format(min_days_of_payment, "No"))
