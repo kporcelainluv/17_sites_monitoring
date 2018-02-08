@@ -2,10 +2,11 @@ import sys
 import requests
 from datetime import datetime
 import whois
+import os
 
 
-def load_urls_to_a_list(text_file):
-    with open(text_file) as file_of_links:
+def load_urls_to_a_list(file_path):
+    with open(file_path) as file_of_links:
         return file_of_links.read().splitlines()
 
 
@@ -20,52 +21,52 @@ def is_server_respond_ok(domain):
 def get_domain_expiration_date(url):
     try:
         domain_info = whois.whois(url)
-        return domain_info.expiration_date[0]
+        if type(domain_info.expiration_date) == list:
+            return domain_info.expiration_date[0]
+        else:
+            return domain_info.expiration_date
     except whois.parser.PywhoisError:
         return None
 
 
-def check_expir_date_from_param(days_of_payment, exp_date, todays_date):
+def check_expiration_date(days_of_payment, exp_date, todays_date):
     days_due_expirency = abs(exp_date - todays_date).days
     return bool(days_due_expirency <= days_of_payment)
 
 
-def output_info_to_console(links,
-                           todays_date,
-                           min_days_of_payment
-                           ):
-    for link in links:
-        print("Checking {}".format(link))
-        server_respond_text = "HTTP Status Code: {}"
-        if is_server_respond_ok(link):
-            print(server_respond_text.format("OK"))
-        else:
-            print(server_respond_text.format("Not OK"))
+def output_link_and_status(server_respond):
+    print("Checking {}".format(link))
+    server_respond_text = "HTTP Status Code: {}"
+    if server_respond:
+        print(server_respond_text.format("OK"))
+    else:
+        print(server_respond_text.format("Not OK"))
 
-        exp_date = get_domain_expiration_date(link)
-        if exp_date is None:
-            print("No domain match for {}".format(link))
-            return
-        expires_in_num_of_days = check_expir_date_from_param(
-            min_days_of_payment,
-            exp_date,
-            todays_date
-        )
-        domain_exp_text = "Domain expires in set number of days ({}): {}"
-        if expires_in_num_of_days:
-            print(domain_exp_text.format(min_days_of_payment, "Yes"))
-        else:
-            print(domain_exp_text.format(min_days_of_payment, "No"))
+
+def output_domain_info(expires_in_num_of_days):
+    domain_exp_text = "Domain expires in set number of days ({}): {}"
+    if expires_in_num_of_days:
+        print(domain_exp_text.format(min_days_of_payment, "Yes"))
+    else:
+        print(domain_exp_text.format(min_days_of_payment, "No"))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
+    if len(sys.argv) == 1 or os.path.isfile(sys.argv[1]) is False:
         exit("Enter a valid txt file")
     text_file = sys.argv[1]
     links = load_urls_to_a_list(text_file)
     todays_date = datetime.now()
     min_days_of_payment = 30
-    output_info_to_console(links,
-                           todays_date,
-                           min_days_of_payment
-                           )
+    for link in links:
+        server_respond = is_server_respond_ok(link)
+        output_link_and_status(server_respond)
+        exp_date = get_domain_expiration_date(link)
+        if exp_date is None:
+            print("No domain match for {}".format(link))
+        else:
+            expires_in_num_of_days = check_expiration_date(
+                min_days_of_payment,
+                exp_date,
+                todays_date)
+            output_domain_info(expires_in_num_of_days)
