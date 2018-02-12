@@ -6,8 +6,8 @@ import os
 
 
 def load_urls_to_a_list(file_path):
-    with open(file_path) as file_of_links:
-        return file_of_links.read().splitlines()
+    with open(file_path) as urls_lis:
+        return urls_lis.read().splitlines()
 
 
 def is_server_respond_ok(domain):
@@ -37,18 +37,14 @@ def check_expiration_date(days_of_payment, exp_date, todays_date):
 def output_link_and_status(server_respond):
     print("Checking {}".format(link))
     server_respond_text = "HTTP Status Code: {}"
-    if server_respond:
-        print(server_respond_text.format("OK"))
-    else:
-        print(server_respond_text.format("Not OK"))
+    status = "OK" if server_respond else "Not OK"
+    print(server_respond_text.format(status))
 
 
 def output_domain_info(expires_in_num_of_days):
     domain_exp_text = "Domain expires in set number of days ({}): {}"
-    if expires_in_num_of_days:
-        print(domain_exp_text.format(min_days_of_payment, "Yes"))
-    else:
-        print(domain_exp_text.format(min_days_of_payment, "No"))
+    respond_to_expiration = "Yes" if expires_in_num_of_days else "No"
+    print(domain_exp_text.format(min_days_of_payment, respond_to_expiration))
 
 
 if __name__ == "__main__":
